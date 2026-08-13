@@ -138,10 +138,20 @@ export function renderSheet(
   spec: PhotoSpec,
   sheet: SheetLayout,
 ): { canvas: HTMLCanvasElement; copies: number } {
-  const dpi = spec.dpi;
+  return tileSheet(photo, spec.widthMm, spec.heightMm, sheet, spec.dpi);
+}
+
+/** The same tiling for anything with a physical size — photos or badges. */
+export function tileSheet(
+  image: HTMLCanvasElement,
+  itemWMm: number,
+  itemHMm: number,
+  sheet: SheetLayout,
+  dpi: number,
+): { canvas: HTMLCanvasElement; copies: number } {
   const mmToPx = (mm: number) => (mm / 25.4) * dpi;
 
-  const plan = planSheet(spec.widthMm, spec.heightMm, sheet.widthMm, sheet.heightMm);
+  const plan = planSheet(itemWMm, itemHMm, sheet.widthMm, sheet.heightMm);
 
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(mmToPx(sheet.widthMm));
@@ -152,8 +162,8 @@ export function renderSheet(
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const cellW = mmToPx(spec.widthMm);
-  const cellH = mmToPx(spec.heightMm);
+  const cellW = mmToPx(itemWMm);
+  const cellH = mmToPx(itemHMm);
   const gap = mmToPx(plan.gapMm);
 
   ctx.strokeStyle = "#c8c8c8";
@@ -164,7 +174,7 @@ export function renderSheet(
     for (let c = 0; c < plan.cols; c++) {
       const x = mmToPx(plan.startXMm) + c * (cellW + gap);
       const y = mmToPx(plan.startYMm) + r * (cellH + gap);
-      ctx.drawImage(photo, x, y, cellW, cellH);
+      ctx.drawImage(image, x, y, cellW, cellH);
       ctx.strokeRect(x + 0.5, y + 0.5, cellW, cellH);
     }
   }
