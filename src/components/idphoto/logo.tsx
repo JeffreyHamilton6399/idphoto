@@ -1,0 +1,24 @@
+import { cn } from "@/lib/utils";
+
+/** A head inside a photo frame with crop marks. */
+export function Logo({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn("size-6", className)}
+      aria-hidden="true"
+    >
+      <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8" />
+      <path d="M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8" />
+      <path d="M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16" />
+      <path d="M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16" />
+      <circle cx="12" cy="10.5" r="2.75" />
+      <path d="M7.5 18a4.5 4.5 0 0 1 9 0" />
+    </svg>
+  );
+}
