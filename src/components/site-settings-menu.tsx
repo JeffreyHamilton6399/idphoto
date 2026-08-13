@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LegalDialog, type LegalKind } from "@/components/site-legal";
 
-const GITHUB_URL = "https://github.com/JeffreyHamilton6399/redactit";
+const GITHUB_URL = "https://github.com/JeffreyHamilton6399/idphoto";
 
 /**
  * The gear menu every tool shares. Apps with their own settings pass them in
