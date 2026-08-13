@@ -7,10 +7,7 @@ import { Header } from "@/components/idphoto/header";
 import { Dropzone } from "@/components/idphoto/dropzone";
 import { Preview } from "@/components/idphoto/preview";
 import { Controls } from "@/components/idphoto/controls";
-import { CardEditor } from "@/components/idphoto/card-editor";
-import { CardPreview } from "@/components/idphoto/card-preview";
 import { SiteFooter } from "@/components/site-footer";
-import { cardSizeMm, emptyCard, renderCard, type CardData } from "@/lib/card";
 
 import { DEFAULT_SPEC_ID, getSpec } from "@/lib/specs";
 import {
@@ -28,11 +25,7 @@ import {
   renderPhoto,
   renderSheet,
   replaceBackground,
-  tileSheet,
 } from "@/lib/render";
-import { CARD_DPI } from "@/lib/card";
-
-type Mode = "photo" | "card";
 
 export default function Page() {
   const [source, setSource] = React.useState<HTMLCanvasElement | null>(null);
@@ -46,8 +39,6 @@ export default function Page() {
   const [headScale, setHeadScale] = React.useState(1);
   const [offset, setOffset] = React.useState({ x: 0, y: 0 });
   const [fileName, setFileName] = React.useState("photo");
-  const [mode, setMode] = React.useState<Mode>("photo");
-  const [card, setCard] = React.useState<CardData>(emptyCard);
 
   const spec = getSpec(specId);
   const sheet = SHEETS.find((s) => s.id === sheetId) ?? SHEETS[0];
@@ -83,18 +74,6 @@ export default function Page() {
     // Cheap enough to lay out for the count; the download re-renders anyway.
     return renderSheet(photo, spec, sheet).copies;
   }, [photo, spec, sheet]);
-
-  // The badge reuses the cropped headshot, so both modes share one pipeline.
-  const cardCanvas = React.useMemo(
-    () => (mode === "card" ? renderCard(card, photo) : null),
-    [mode, card, photo],
-  );
-
-  const cardSheetCopies = React.useMemo(() => {
-    if (!cardCanvas) return null;
-    const { widthMm, heightMm } = cardSizeMm(card.orientation);
-    return tileSheet(cardCanvas, widthMm, heightMm, sheet, CARD_DPI).copies;
-  }, [cardCanvas, card.orientation, sheet]);
 
   const handleFile = React.useCallback(async (file: File) => {
     setBusy(true);
@@ -181,56 +160,6 @@ export default function Page() {
     toast.success(`Saved a ${sheet.label} sheet with ${copies} copies`);
   }, [photo, spec, sheet, fileName]);
 
-  const handleLogoFile = React.useCallback(async (file: File) => {
-    try {
-      const canvas = await fileToCanvas(file);
-      setCard((prev) => ({ ...prev, logo: canvas }));
-    } catch (err) {
-      console.error(err);
-      toast.error("Couldn't read that logo");
-    }
-  }, []);
-
-  const handleArtworkFile = React.useCallback(async (file: File) => {
-    try {
-      const canvas = await fileToCanvas(file);
-      setCard((prev) => ({ ...prev, artwork: canvas }));
-      toast.success("Artwork applied", {
-        description: "Switch the style to Plain if the chrome covers your design.",
-      });
-    } catch (err) {
-      console.error(err);
-      toast.error("Couldn't read that artwork");
-    }
-  }, []);
-
-  const handleDownloadCard = React.useCallback(async () => {
-    if (!cardCanvas) return;
-    const blob = await canvasToBlob(cardCanvas, "image/png");
-    const name = card.orgName.trim() || "badge";
-    download(blob, `${name.toLowerCase().replace(/\s+/g, "-")}-card.png`);
-    toast.success("Saved card at 600 DPI");
-  }, [cardCanvas, card.orgName]);
-
-  const handleDownloadCardSheet = React.useCallback(async () => {
-    if (!cardCanvas) return;
-    const { widthMm, heightMm } = cardSizeMm(card.orientation);
-    const { canvas, copies } = tileSheet(
-      cardCanvas,
-      widthMm,
-      heightMm,
-      sheet,
-      CARD_DPI,
-    );
-    const blob = await canvasToBlob(canvas);
-    const name = card.orgName.trim() || "badge";
-    download(
-      blob,
-      `${name.toLowerCase().replace(/\s+/g, "-")}-${sheet.id}-sheet.jpg`,
-    );
-    toast.success(`Saved a ${sheet.label} sheet with ${copies} cards`);
-  }, [cardCanvas, card.orientation, card.orgName, sheet]);
-
   const startOver = React.useCallback(() => {
     setSource(null);
     setGeometry(null);
@@ -239,37 +168,10 @@ export default function Page() {
     setOffset({ x: 0, y: 0 });
   }, []);
 
-  const modeTabs = (
-    <div className="flex shrink-0 items-center gap-1 border-b px-3 py-1.5">
-      {(
-        [
-          ["photo", "Passport photo"],
-          ["card", "ID card"],
-        ] as const
-      ).map(([id, label]) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => setMode(id)}
-          className={
-            "rounded-md px-2.5 py-1 text-xs font-medium transition-colors " +
-            (mode === id
-              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-              : "text-muted-foreground hover:bg-muted")
-          }
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-
-  // Photo mode needs a face before it can do anything; card mode doesn't.
-  if (mode === "photo" && (!source || !geometry)) {
+  if (!source || !geometry) {
     return (
       <div className="flex h-dvh flex-col overflow-hidden bg-background">
         <Header />
-        {modeTabs}
         <main className="flex min-h-0 flex-1 flex-col">
           <Dropzone onFile={handleFile} busy={busy} />
         </main>
@@ -278,38 +180,9 @@ export default function Page() {
     );
   }
 
-  if (mode === "card") {
-    return (
-      <div className="flex h-dvh flex-col overflow-hidden bg-background">
-        <Header onStartOver={source ? startOver : undefined} />
-        {modeTabs}
-        <main className="flex min-h-0 flex-1 flex-col-reverse md:flex-row">
-          <aside className="flex max-h-[55%] min-h-0 shrink-0 flex-col border-t md:max-h-none md:w-80 md:border-r md:border-t-0">
-            <CardEditor
-              data={card}
-              onChange={setCard}
-              onLogoFile={handleLogoFile}
-              onArtworkFile={handleArtworkFile}
-              hasPhoto={photo !== null}
-              sheet={sheet}
-              onSheetChange={setSheetId}
-              sheetCopies={cardSheetCopies}
-              onDownloadCard={handleDownloadCard}
-              onDownloadSheet={handleDownloadCardSheet}
-            />
-          </aside>
-          <section className="flex min-h-0 flex-1 flex-col">
-            <CardPreview card={cardCanvas} data={card} />
-          </section>
-        </main>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <Header onStartOver={startOver} />
-      {modeTabs}
 
       <main className="flex min-h-0 flex-1 flex-col-reverse md:flex-row">
         <aside className="flex max-h-[50%] min-h-0 shrink-0 flex-col border-t md:max-h-none md:w-80 md:border-r md:border-t-0">
