@@ -191,6 +191,19 @@ export default function Page() {
     }
   }, []);
 
+  const handleArtworkFile = React.useCallback(async (file: File) => {
+    try {
+      const canvas = await fileToCanvas(file);
+      setCard((prev) => ({ ...prev, artwork: canvas }));
+      toast.success("Artwork applied", {
+        description: "Switch the style to Plain if the chrome covers your design.",
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Couldn't read that artwork");
+    }
+  }, []);
+
   const handleDownloadCard = React.useCallback(async () => {
     if (!cardCanvas) return;
     const blob = await canvasToBlob(cardCanvas, "image/png");
@@ -276,6 +289,7 @@ export default function Page() {
               data={card}
               onChange={setCard}
               onLogoFile={handleLogoFile}
+              onArtworkFile={handleArtworkFile}
               hasPhoto={photo !== null}
               sheet={sheet}
               onSheetChange={setSheetId}

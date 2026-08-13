@@ -10,6 +10,7 @@ import {
   CARD_MM,
 } from "../src/lib/card.ts";
 import { planSheet, SHEETS } from "../src/lib/render.ts";
+import { TEMPLATES, applyTemplate, getTemplate } from "../src/lib/card-templates.ts";
 
 let failures = 0;
 function check(label, pass, detail = "") {
@@ -92,6 +93,44 @@ const measure = (text, fontPx) => text.length * fontPx * 0.5;
       check(`${o} card on ${s.id}: at least one copy`, p.copies >= 1, `(${p.copies})`);
     }
   }
+}
+
+// --- Templates ------------------------------------------------------------
+{
+  check("template ids are unique", new Set(TEMPLATES.map((t) => t.id)).size === TEMPLATES.length);
+
+  for (const t of TEMPLATES) {
+    const applied = applyTemplate(emptyCard(), t);
+    check(
+      `${t.id}: fields fit the orientation`,
+      applied.fields.length <= maxFieldsFor(applied.orientation),
+      `(${applied.fields.length} > ${maxFieldsFor(applied.orientation)})`,
+    );
+    check(`${t.id}: every field is labelled`, applied.fields.every((f) => f.label.trim() !== ""));
+    check(`${t.id}: field ids are unique`, new Set(applied.fields.map((f) => f.id)).size === applied.fields.length);
+    check(`${t.id}: carries its style through`, applied.accent === t.accent && applied.layout === t.layout);
+    check(`${t.id}: records which template is active`, applied.templateId === t.id);
+  }
+
+  // Switching template restyles without wiping what has been typed.
+  {
+    let data = emptyCard();
+    data.holderName = "Ada Lovelace";
+    data.orgName = "Analytical Engines Ltd";
+    data.fields = data.fields.map((f, i) => ({ ...f, value: `value ${i}` }));
+
+    const switched = applyTemplate(data, getTemplate("student"));
+    check("switching keeps the holder name", switched.holderName === "Ada Lovelace");
+    check("switching keeps the organisation", switched.orgName === "Analytical Engines Ltd");
+    check("switching keeps entered values", switched.fields[0].value === "value 0", `(${switched.fields[0].value})`);
+    check("switching relabels the fields", switched.fields[0].label === "Student No.", `(${switched.fields[0].label})`);
+  }
+
+  // An unknown id must not throw.
+  check("unknown template falls back", getTemplate("nope").id === TEMPLATES[0].id);
+
+  // The artwork template must not paint chrome over the supplied design.
+  check("artwork template uses the plain style", getTemplate("artwork").layout === "plain");
 }
 
 console.log(failures ? `\n${failures} FAILING` : "\nall checks passed");

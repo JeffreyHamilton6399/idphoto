@@ -10,13 +10,16 @@ import {
   maxFieldsFor,
   type CardData,
   type CardField,
+  type CardLayout,
 } from "@/lib/card";
+import { TEMPLATES, applyTemplate, getTemplate } from "@/lib/card-templates";
 import { SHEETS, type SheetLayout } from "@/lib/render";
 
 interface CardEditorProps {
   data: CardData;
   onChange: (next: CardData) => void;
   onLogoFile: (file: File) => void;
+  onArtworkFile: (file: File) => void;
   hasPhoto: boolean;
   sheet: SheetLayout;
   onSheetChange: (id: string) => void;
@@ -50,6 +53,7 @@ export function CardEditor(props: CardEditorProps) {
     data,
     onChange,
     onLogoFile,
+    onArtworkFile,
     hasPhoto,
     sheet,
     onSheetChange,
@@ -59,7 +63,9 @@ export function CardEditor(props: CardEditorProps) {
   } = props;
 
   const logoRef = React.useRef<HTMLInputElement>(null);
+  const artworkRef = React.useRef<HTMLInputElement>(null);
   const maxFields = maxFieldsFor(data.orientation);
+  const template = getTemplate(data.templateId);
 
   const setField = (index: number, patch: Partial<CardField>) => {
     const fields = data.fields.map((f, i) => (i === index ? { ...f, ...patch } : f));
@@ -78,6 +84,62 @@ export function CardEditor(props: CardEditorProps) {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto">
+      <Section title="Template">
+        <select
+          value={data.templateId}
+          onChange={(e) =>
+            onChange(applyTemplate(data, getTemplate(e.target.value)))
+          }
+          className="h-9 w-full rounded-md border bg-background px-2 text-sm outline-none transition-colors focus-visible:border-emerald-500/60 focus-visible:ring-2 focus-visible:ring-emerald-500/20"
+        >
+          {TEMPLATES.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+        <p className="text-[11px] text-muted-foreground">{template.description}</p>
+
+        <div className="flex items-center gap-1.5">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => artworkRef.current?.click()}
+            className="h-8 flex-1 justify-start gap-2 text-xs"
+          >
+            <ImagePlus className="size-3.5" />
+            {data.artwork ? "Change artwork" : "Use your own artwork"}
+          </Button>
+          {data.artwork && (
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label="Remove artwork"
+              onClick={() => onChange({ ...data, artwork: null })}
+              className="size-8 text-muted-foreground"
+            >
+              <X className="size-3.5" />
+            </Button>
+          )}
+        </div>
+        <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+          A blank card design from your own organisation — it&apos;s drawn
+          full-bleed underneath, with the photo and text on top. Pair it with
+          the Plain style so nothing covers your design.
+        </p>
+        <input
+          ref={artworkRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="sr-only"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) onArtworkFile(f);
+            e.currentTarget.value = "";
+          }}
+        />
+      </Section>
+
       <Section title="Organisation">
         <input
           value={data.orgName}
@@ -136,7 +198,7 @@ export function CardEditor(props: CardEditorProps) {
         <input
           value={data.role}
           onChange={(e) => onChange({ ...data, role: e.target.value })}
-          placeholder="Role, class, or membership type"
+          placeholder={template.rolePlaceholder}
           className={inputClass}
         />
         {!hasPhoto && (
@@ -228,6 +290,30 @@ export function CardEditor(props: CardEditorProps) {
               )}
             >
               {o}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          {(
+            [
+              ["band", "Band"],
+              ["sidebar", "Stripe"],
+              ["plain", "Plain"],
+            ] as [CardLayout, string][]
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onChange({ ...data, layout: id })}
+              className={cn(
+                "flex-1 rounded-md border px-2 py-1.5 text-xs transition-colors",
+                data.layout === id
+                  ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                  : "text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {label}
             </button>
           ))}
         </div>

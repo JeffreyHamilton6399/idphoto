@@ -15,6 +15,12 @@
 
 export type CardOrientation = "landscape" | "portrait";
 
+/**
+ * Chrome style. `plain` draws no background of its own, which is what you want
+ * when compositing onto artwork your organisation already designed.
+ */
+export type CardLayout = "band" | "sidebar" | "plain";
+
 /** CR80 — the credit-card size every badge printer and lanyard holder takes. */
 export const CARD_MM = { long: 85.6, short: 53.98 };
 
@@ -27,15 +33,22 @@ export interface CardField {
 }
 
 export interface CardData {
+  templateId: string;
   orgName: string;
   orgTagline: string;
   holderName: string;
   role: string;
   fields: CardField[];
   accent: string;
+  layout: CardLayout;
   orientation: CardOrientation;
   /** Optional logo, already decoded. */
   logo: HTMLImageElement | HTMLCanvasElement | null;
+  /**
+   * A blank card design supplied by the user's own organisation, drawn
+   * full-bleed underneath the photo and text.
+   */
+  artwork: HTMLCanvasElement | null;
 }
 
 export const ACCENTS = [
@@ -49,17 +62,21 @@ export const ACCENTS = [
 
 export function emptyCard(): CardData {
   return {
+    templateId: "staff",
     orgName: "",
     orgTagline: "",
     holderName: "",
     role: "",
     fields: [
-      { id: "id", label: "ID No.", value: "" },
-      { id: "issued", label: "Issued", value: "" },
+      { id: "t0", label: "Employee No.", value: "" },
+      { id: "t1", label: "Department", value: "" },
+      { id: "t2", label: "Issued", value: "" },
     ],
     accent: ACCENTS[0].value,
+    layout: "band",
     orientation: "landscape",
     logo: null,
+    artwork: null,
   };
 }
 
@@ -148,60 +165,93 @@ export function renderCard(
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const pad = mm(4);
-  const headerH = mm(data.orientation === "landscape" ? 11 : 13);
-
-  // --- Header band ---------------------------------------------------------
-  ctx.fillStyle = data.accent;
-  ctx.fillRect(0, 0, canvas.width, headerH);
-
-  let headerTextX = pad;
-  if (data.logo) {
-    const logoH = headerH - mm(3);
-    const ratio =
-      ("width" in data.logo ? data.logo.width : 1) /
-      ("height" in data.logo ? data.logo.height : 1);
-    const logoW = logoH * (Number.isFinite(ratio) && ratio > 0 ? ratio : 1);
-    ctx.drawImage(data.logo, pad, mm(1.5), logoW, logoH);
-    headerTextX = pad + logoW + mm(2.5);
+  // --- Supplied artwork, full-bleed under everything -----------------------
+  if (data.artwork) {
+    ctx.imageSmoothingQuality = "high";
+    // Cover the card without distorting the artwork's own proportions.
+    const scale = Math.max(
+      canvas.width / data.artwork.width,
+      canvas.height / data.artwork.height,
+    );
+    const w = data.artwork.width * scale;
+    const h = data.artwork.height * scale;
+    ctx.drawImage(data.artwork, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
   }
 
-  const orgFit = fitText(
-    data.orgName || "Organisation",
-    canvas.width - headerTextX - pad,
-    mm(4.2),
-    mm(2.4),
-    measure,
-  );
+  const pad = mm(4);
+  const bandH = mm(data.orientation === "landscape" ? 11 : 13);
+  const stripeW = mm(7);
+  const headerH = data.layout === "band" ? bandH : 0;
+
+  // --- Chrome --------------------------------------------------------------
+  if (data.layout === "band") {
+    ctx.fillStyle = data.accent;
+    ctx.fillRect(0, 0, canvas.width, bandH);
+  } else if (data.layout === "sidebar") {
+    ctx.fillStyle = data.accent;
+    ctx.fillRect(0, 0, stripeW, canvas.height);
+  }
+
+  const chromeLeft = data.layout === "sidebar" ? stripeW + pad : pad;
+
+  // The org name rides in the band when there is one; otherwise it sits above
+  // the holder's name in the body, in the accent colour.
   ctx.textBaseline = "middle";
-  draw(
-    orgFit.text,
-    headerTextX,
-    headerH / 2 - (data.orgTagline ? mm(1.6) : 0),
-    orgFit.fontPx,
-    "600",
-    "#ffffff",
-  );
-  if (data.orgTagline) {
-    const tagFit = fitText(
-      data.orgTagline,
+  let headerTextX = chromeLeft;
+
+  if (data.layout === "band") {
+    if (data.logo) {
+      const logoH = bandH - mm(3);
+      const ratio = data.logo.width / data.logo.height;
+      const logoW = logoH * (Number.isFinite(ratio) && ratio > 0 ? ratio : 1);
+      ctx.drawImage(data.logo, pad, mm(1.5), logoW, logoH);
+      headerTextX = pad + logoW + mm(2.5);
+    }
+
+    const orgFit = fitText(
+      data.orgName || "Organisation",
       canvas.width - headerTextX - pad,
+      mm(4.2),
       mm(2.4),
-      mm(1.8),
       measure,
     );
-    ctx.globalAlpha = 0.85;
-    draw(tagFit.text, headerTextX, headerH / 2 + mm(1.8), tagFit.fontPx, "400", "#ffffff");
-    ctx.globalAlpha = 1;
+    draw(
+      orgFit.text,
+      headerTextX,
+      bandH / 2 - (data.orgTagline ? mm(1.6) : 0),
+      orgFit.fontPx,
+      "600",
+      "#ffffff",
+    );
+    if (data.orgTagline) {
+      const tagFit = fitText(
+        data.orgTagline,
+        canvas.width - headerTextX - pad,
+        mm(2.4),
+        mm(1.8),
+        measure,
+      );
+      ctx.globalAlpha = 0.85;
+      draw(tagFit.text, headerTextX, bandH / 2 + mm(1.8), tagFit.fontPx, "400", "#ffffff");
+      ctx.globalAlpha = 1;
+    }
+  } else if (data.logo) {
+    // No band to hold it, so the logo goes top-right of the body.
+    const logoH = mm(8);
+    const ratio = data.logo.width / data.logo.height;
+    const logoW = logoH * (Number.isFinite(ratio) && ratio > 0 ? ratio : 1);
+    ctx.drawImage(data.logo, canvas.width - pad - logoW, pad, logoW, logoH);
   }
 
   // --- Photo ---------------------------------------------------------------
   ctx.textBaseline = "alphabetic";
   const bodyTop = headerH + pad;
   const photoW =
-    data.orientation === "landscape" ? mm(24) : canvas.width - pad * 2;
+    data.orientation === "landscape"
+      ? mm(24)
+      : canvas.width - chromeLeft - pad;
   const photoH = photoW * (45 / 35);
-  const photoX = pad;
+  const photoX = chromeLeft;
   const photoY = bodyTop;
 
   if (photo) {
@@ -223,10 +273,17 @@ export function renderCard(
 
   // --- Holder + fields -----------------------------------------------------
   const textX =
-    data.orientation === "landscape" ? photoX + photoW + mm(4) : pad;
-  const textTop =
+    data.orientation === "landscape" ? photoX + photoW + mm(4) : chromeLeft;
+  let textTop =
     data.orientation === "landscape" ? bodyTop + mm(4) : photoY + photoH + mm(5);
   const textW = canvas.width - textX - pad;
+
+  // Without a band, the organisation is named above the holder instead.
+  if (data.layout !== "band" && data.orgName) {
+    const orgFit = fitText(data.orgName, textW, mm(3), mm(2), measure);
+    draw(orgFit.text, textX, textTop, orgFit.fontPx, "700", data.accent);
+    textTop += mm(4.5);
+  }
 
   const nameFit = fitText(
     data.holderName || "Full Name",
