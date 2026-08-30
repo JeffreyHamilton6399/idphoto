@@ -161,7 +161,7 @@ export function LegalDialog({
       <DialogContent className="max-h-[85vh] gap-0 overflow-hidden p-0 sm:max-w-2xl">
         <DialogHeader className="border-b px-6 py-4 text-left">
           <DialogTitle className="flex items-center gap-2 text-xl">
-            <Icon className="size-5 text-emerald-500" />
+            <Icon className="size-5 text-foreground" />
             {isPrivacy ? "Privacy Policy" : "Terms of Service"}
           </DialogTitle>
           <DialogDescription>Last updated: {LAST_UPDATED}</DialogDescription>

@@ -58,12 +58,12 @@ export function Dropzone({ onFile, busy }: DropzoneProps) {
           onClick={() => inputRef.current?.click()}
           className={cn(
             "group relative flex min-h-[300px] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors",
-            "border-border hover:border-emerald-500/50 hover:bg-muted/40",
-            dragging && "border-emerald-500 bg-emerald-500/5",
+            "border-border hover:border-border hover:bg-muted/40",
+            dragging && "border-border bg-muted",
             busy && "pointer-events-none opacity-60",
           )}
         >
-          <span className="flex size-12 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+          <span className="flex size-12 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors group-hover:text-foreground dark:group-hover:text-foreground">
             <UserSquare className="size-6" />
           </span>
           <span className="text-base font-semibold tracking-tight">
@@ -76,7 +76,7 @@ export function Dropzone({ onFile, busy }: DropzoneProps) {
             or paste from clipboard
           </span>
           <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-            <ShieldCheck className="size-3.5 text-emerald-500" />
+            <ShieldCheck className="size-3.5 text-foreground" />
             Cropped here. Nothing is sent anywhere.
           </span>
         </button>

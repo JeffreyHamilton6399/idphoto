@@ -1,17 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-const sans = Instrument_Sans({
+const sans = Inter_Tight({
   variable: "--font-app-sans",
   subsets: ["latin"],
 });
 
-const mono = IBM_Plex_Mono({
+const mono = JetBrains_Mono({
   variable: "--font-app-mono",
-  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 

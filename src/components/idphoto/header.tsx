@@ -24,7 +24,7 @@ export function Header({ onStartOver }: HeaderProps) {
         aria-label="Reload IDPhoto"
         className="group flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
       >
-        <span className="text-emerald-500 transition-transform group-hover:scale-105">
+        <span className="text-foreground transition-transform group-hover:scale-105">
           <Logo className="size-5" />
         </span>
         <span className="text-sm font-semibold tracking-tight transition-opacity group-hover:opacity-80">

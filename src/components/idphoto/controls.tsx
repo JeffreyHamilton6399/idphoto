@@ -98,7 +98,7 @@ export function Controls(props: ControlsProps) {
         <select
           value={spec.id}
           onChange={(e) => onSpecChange(e.target.value)}
-          className="h-9 w-full rounded-md border bg-background px-2 text-sm outline-none transition-colors focus-visible:border-emerald-500/60 focus-visible:ring-2 focus-visible:ring-emerald-500/20"
+          className="h-9 w-full rounded-md border bg-background px-2 text-sm outline-none transition-colors focus-visible:border-border focus-visible:ring-2 focus-visible:ring-ring"
         >
           {SPECS.map((s) => (
             <option key={s.id} value={s.id}>
@@ -142,7 +142,7 @@ export function Controls(props: ControlsProps) {
             step={0.005}
             value={headScale}
             onChange={(e) => onHeadScale(Number(e.target.value))}
-            className="w-full accent-emerald-500"
+            className="w-full accent-foreground"
           />
         </label>
 
@@ -156,7 +156,7 @@ export function Controls(props: ControlsProps) {
               step={1}
               value={offsetX}
               onChange={(e) => onOffset(Number(e.target.value), offsetY)}
-              className="w-full accent-emerald-500"
+              className="w-full accent-foreground"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs">
@@ -168,7 +168,7 @@ export function Controls(props: ControlsProps) {
               step={1}
               value={offsetY}
               onChange={(e) => onOffset(offsetX, Number(e.target.value))}
-              className="w-full accent-emerald-500"
+              className="w-full accent-foreground"
             />
           </label>
         </div>
@@ -230,7 +230,7 @@ export function Controls(props: ControlsProps) {
         <Button
           size="sm"
           onClick={onDownloadPhoto}
-          className="h-8 gap-1.5 bg-emerald-500 text-xs text-white hover:bg-emerald-600"
+          className="h-8 gap-1.5 bg-foreground text-xs text-background hover:bg-foreground/90"
         >
           <Download className="size-3.5" />
           Download photo ({spec.widthMm}×{spec.heightMm} mm)
