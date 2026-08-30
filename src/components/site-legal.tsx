@@ -27,11 +27,11 @@ function PrivacyBody() {
   return (
     <>
       <p>
-        Your privacy is the whole point of IDPhoto. This page explains exactly
-        what happens when you use it.
+        This page describes what IDPhoto does with what you give it, and what it
+        does not do.
       </p>
 
-      <h3>We don’t see your photos. Ever.</h3>
+      <h3>Your photos stay on your device</h3>
       <p>Face detection, cropping, and background replacement all run locally on your device, inside the browser tab.</p>
       <p>Your files are <strong>never uploaded to any server</strong>, never stored, and never transmitted across the network.</p>
 
@@ -69,7 +69,7 @@ function PrivacyBody() {
 
       <h3>Changes to this policy</h3>
       <p>
-        If this ever changes, this page will be updated. Because the tool is built to run without a server, the core promise — your photos stay on your device — will not change.
+        If this ever changes, this page will be updated. Because the tool is built to run without a server, the promise that your photos stay on your device will not change.
       </p>
 
       <h3>Contact</h3>
@@ -97,7 +97,7 @@ function TermsBody() {
       <h3>The service</h3>
       <p>
         IDPhoto is a free, browser-based tool for cropping passport and ID photos to official specifications. It is provided “as is” and “as available”,
-        without warranties of any kind — express or implied — including
+        without warranties of any kind, express or implied, including
         warranties of merchantability or fitness for a particular purpose.
       </p>
 
@@ -119,7 +119,7 @@ function TermsBody() {
       <h3>Free and open</h3>
       <p>
         IDPhoto is free to use. There are no paid tiers, no watermarks, and no
-        usage limits imposed by the tool itself. The source is on GitHub — you
+        usage limits imposed by the tool itself. The source is on GitHub. You
         are welcome to inspect, fork, or self-host it.
       </p>
 

@@ -70,14 +70,14 @@ export function Dropzone({ onFile, busy }: DropzoneProps) {
             Drop a photo
           </span>
           <span className="max-w-[34ch] text-sm text-muted-foreground">
-            Passport and ID photos, cropped to spec — right in your browser.
+            Cropped to the head-size and eye-line rules for your country.
           </span>
           <span className="text-xs text-muted-foreground/70">
             or paste from clipboard
           </span>
           <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
             <ShieldCheck className="size-3.5 text-emerald-500" />
-            No uploads · No sign-up · 100% free
+            Cropped here. Nothing is sent anywhere.
           </span>
         </button>
 

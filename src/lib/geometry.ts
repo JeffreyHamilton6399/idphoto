@@ -1,7 +1,7 @@
 /**
  * Turning a detected face into a crop that satisfies a spec.
  *
- * The specs measure crown-to-chin, but no face model reports the crown — hair
+ * The specs measure crown-to-chin, but no face model reports the crown - hair
  * is not a facial landmark. Two ways to find it, in order of trust:
  *
  *   1. The silhouette from background removal. The topmost opaque pixel above
@@ -9,7 +9,7 @@
  *      measures, so when a mask is available we use it.
  *   2. Anthropometry. The eye line sits close to the vertical midpoint of the
  *      head, so crown ≈ eyes − (chin − eyes). Good to a few percent on most
- *      adults, and wrong on tall hair — which is why the UI lets you nudge it.
+ *      adults, and wrong on tall hair - which is why the UI lets you nudge it.
  */
 
 import {
@@ -155,7 +155,7 @@ export interface ComplianceCheck {
 
 /**
  * The checks an application actually gets rejected on. Deliberately does not
- * claim to judge expression, glasses glare, or shadowing — a browser can't,
+ * claim to judge expression, glasses glare, or shadowing - a browser can't,
  * and pretending otherwise is what the paid sites do.
  */
 export function runChecks(
@@ -193,7 +193,7 @@ export function runChecks(
     label: "Fits in photo",
     status: overflow.any ? "fail" : "pass",
     detail: overflow.any
-      ? "The crop runs past the edge of your photo — move back and retake, or nudge the crop"
+      ? "The crop runs past the edge of your photo, move back and retake, or nudge the crop"
       : "Whole crop is inside the original",
   });
 
@@ -204,7 +204,7 @@ export function runChecks(
     detail:
       m.sampling >= 1
         ? `Enough detail for ${m.outputPx.width}×${m.outputPx.height} px at ${spec.dpi} DPI`
-        : `Upscaling ${(1 / m.sampling).toFixed(1)}× to reach ${m.outputPx.width}×${m.outputPx.height} px — use a higher-resolution photo`,
+        : `Upscaling ${(1 / m.sampling).toFixed(1)}× to reach ${m.outputPx.width}×${m.outputPx.height} px, use a higher-resolution photo`,
   });
 
   const roll = Math.abs(geo.rollDeg);
@@ -212,7 +212,7 @@ export function runChecks(
     id: "level",
     label: "Head level",
     status: roll <= 3 ? "pass" : roll <= 6 ? "warn" : "fail",
-    detail: `Tilted ${roll.toFixed(1)}° — straighten up for a clean pass`,
+    detail: `Tilted ${roll.toFixed(1)}°, straighten up for a clean pass`,
   });
 
   if (geo.crownSource === "estimated") {

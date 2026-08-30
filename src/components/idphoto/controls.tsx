@@ -5,7 +5,7 @@ import {
   Check,
   AlertTriangle,
   X,
-  Wand2,
+  Replace,
   Loader2,
   Download,
   Printer,
@@ -102,7 +102,7 @@ export function Controls(props: ControlsProps) {
         >
           {SPECS.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.country} — {s.document} ({s.widthMm}×{s.heightMm} mm)
+              {s.country}, {s.document} ({s.widthMm}×{s.heightMm} mm)
             </option>
           ))}
         </select>
@@ -207,7 +207,7 @@ export function Controls(props: ControlsProps) {
             </>
           ) : (
             <>
-              <Wand2 className="size-3.5" />
+              <Replace className="size-3.5" />
               Replace background
             </>
           )}
@@ -259,7 +259,7 @@ export function Controls(props: ControlsProps) {
           </Button>
         </div>
         <p className="text-[11px] text-muted-foreground/70">
-          The sheet prints at {spec.dpi} DPI with cut guides — take it to any
+          The sheet prints at {spec.dpi} DPI with cut guides, take it to any
           photo counter or print at home.
         </p>
       </Section>

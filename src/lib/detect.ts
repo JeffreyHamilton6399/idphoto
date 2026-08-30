@@ -3,7 +3,7 @@
 /**
  * Face detection. TinyFaceDetector finds the face, the 68-point landmark model
  * gives the eye centres and chin. Both models are self-hosted under
- * /models/face-api and total under 600 KB — the photo never leaves the tab.
+ * /models/face-api and total under 600 KB - the photo never leaves the tab.
  */
 
 import type { FaceGeometry } from "./geometry";
@@ -40,7 +40,7 @@ export class NoFaceError extends Error {
 
 export class ManyFacesError extends Error {
   constructor(public count: number) {
-    super(`Found ${count} faces — a passport photo must show one person alone.`);
+    super(`Found ${count} faces, a passport photo must show one person alone.`);
     this.name = "ManyFacesError";
   }
 }
@@ -87,7 +87,7 @@ export async function detectFace(
     const [biggest, second] = byArea;
     const biggestArea = biggest.detection.box.width * biggest.detection.box.height;
     const secondArea = second.detection.box.width * second.detection.box.height;
-    // Only complain when another face is a comparable size — a small face in
+    // Only complain when another face is a comparable size - a small face in
     // the background will be cropped out anyway.
     if (secondArea > biggestArea * 0.5) throw new ManyFacesError(results.length);
   }

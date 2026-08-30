@@ -1,47 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sans = Instrument_Sans({
+  variable: "--font-app-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const mono = IBM_Plex_Mono({
+  variable: "--font-app-mono",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "IDPhoto — Passport photos cropped to spec, in your browser",
+  title: "IDPhoto: crop a passport photo to spec",
   description:
-    "Turn any photo into a passport or ID photo that meets the official head-size and eye-line rules, then print a sheet at home. Your face never leaves your device — no uploads, no sign-up, no $15 download fee.",
-  keywords: [
-    "passport photo",
-    "passport photo online",
-    "ID photo maker",
-    "visa photo",
-    "2x2 passport photo",
-    "35x45 photo",
-    "free passport photo",
-  ],
+    "Pick a country, line the face up against the head-size and eye-line guides, and print a sheet at home. Covers the common 2x2 inch and 35x45 mm formats.",
   authors: [{ name: "Jeffrey Hamilton" }],
   icons: {
     icon: "/favicon.svg",
   },
   openGraph: {
-    title: "IDPhoto — Free passport photos, made in your browser",
+    title: "IDPhoto",
     description:
-      "Cropped to the official head-size and eye-line rules, with a printable sheet. Nothing uploaded.",
+      "Crop a passport photo to the official head-size rules and print a sheet at home.",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "IDPhoto — Free passport photos, made in your browser",
+    title: "IDPhoto",
     description:
-      "Cropped to official spec, with a printable sheet. Nothing uploaded.",
+      "Crop a passport photo to the official head-size rules.",
   },
 };
 
@@ -62,7 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${sans.variable} ${mono.variable} antialiased bg-background text-foreground`}
       >
         <ThemeProvider>{children}</ThemeProvider>
         <Toaster />

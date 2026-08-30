@@ -16,7 +16,7 @@ interface PreviewProps {
 
 /**
  * The finished photo at print proportions, with the spec's own guide lines
- * drawn over it — the crown line, the chin line, and the eye line — so the
+ * drawn over it - the crown line, the chin line, and the eye line - so the
  * measurement is something you can see rather than something you're told.
  */
 export function Preview({ photo, spec, geometry, crop, showGuides }: PreviewProps) {

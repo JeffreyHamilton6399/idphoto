@@ -130,7 +130,7 @@ export function planSheet(
 }
 
 /**
- * Tile copies of the photo across a print sheet with cut guides — the part the
+ * Tile copies of the photo across a print sheet with cut guides - the part the
  * paid sites charge the most for.
  */
 export function renderSheet(
@@ -197,7 +197,7 @@ export function download(blob: Blob, filename: string): void {
 
 /**
  * Replace the background with a flat colour using @imgly's isnet model.
- * Loaded on demand — nobody downloads 40 MB of model to crop a photo.
+ * Loaded on demand - nobody downloads 40 MB of model to crop a photo.
  */
 export async function replaceBackground(
   source: HTMLCanvasElement,

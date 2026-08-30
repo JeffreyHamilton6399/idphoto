@@ -3,7 +3,7 @@
  *
  * Every figure here is in millimetres, taken from the issuing authority's
  * published requirements. "Head" means crown of the head (including hair) to
- * the bottom of the chin — that is what the official diagrams measure, and it
+ * the bottom of the chin - that is what the official diagrams measure, and it
  * is the rule most free tools ignore, since they only crop to the right
  * aspect ratio and let the applicant fail on head size.
  *
@@ -49,7 +49,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#ffffff",
     backgroundLabel: "Plain white or off-white",
-    source: "US Dept. of State — 2×2 in, head 1–1⅜ in, eyes 1⅛–1⅜ in from bottom",
+    source: "US Dept. of State, 2×2 in, head 1–1⅜ in, eyes 1⅛–1⅜ in from bottom",
   },
   {
     id: "uk-passport",
@@ -62,7 +62,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#f2f2f2",
     backgroundLabel: "Plain light grey or cream",
-    source: "HM Passport Office — 35×45 mm, crown to chin 29–34 mm",
+    source: "HM Passport Office, 35×45 mm, crown to chin 29–34 mm",
   },
   {
     id: "schengen",
@@ -75,7 +75,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#f2f2f2",
     backgroundLabel: "Plain light grey",
-    source: "ICAO 9303 / EU visa code — 35×45 mm, face 70–80% of height",
+    source: "ICAO 9303 / EU visa code, 35×45 mm, face 70–80% of height",
   },
   {
     id: "canada-passport",
@@ -88,7 +88,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#ffffff",
     backgroundLabel: "Plain white",
-    source: "IRCC — 50×70 mm, crown to chin 31–36 mm",
+    source: "IRCC: 50×70 mm, crown to chin 31–36 mm",
   },
   {
     id: "australia-passport",
@@ -101,7 +101,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#f2f2f2",
     backgroundLabel: "Plain light grey or white",
-    source: "Australian Passport Office — 35×45 mm, chin to crown 32–36 mm",
+    source: "Australian Passport Office, 35×45 mm, chin to crown 32–36 mm",
   },
   {
     id: "india-passport",
@@ -114,7 +114,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#ffffff",
     backgroundLabel: "Plain white",
-    source: "Passport Seva — 51×51 mm, face covering 70–80% of the frame",
+    source: "Passport Seva, 51×51 mm, face covering 70–80% of the frame",
   },
   {
     id: "japan-passport",
@@ -127,7 +127,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#ffffff",
     backgroundLabel: "Plain white or light blue",
-    source: "MOFA Japan — 35×45 mm, crown to chin 34 mm ±2 mm",
+    source: "MOFA Japan, 35×45 mm, crown to chin 34 mm ±2 mm",
   },
   {
     id: "china-visa",
@@ -140,7 +140,7 @@ export const SPECS: PhotoSpec[] = [
     dpi: 300,
     background: "#ffffff",
     backgroundLabel: "Plain white",
-    source: "China visa centre — 33×48 mm, head 28–33 mm",
+    source: "China visa centre, 33×48 mm, head 28–33 mm",
   },
 ];
 
@@ -159,7 +159,7 @@ export function pixelSize(spec: PhotoSpec): { width: number; height: number } {
   };
 }
 
-/** Midpoint of the allowed head-height range — what we aim for by default. */
+/** Midpoint of the allowed head-height range - what we aim for by default. */
 export function targetHeadFraction(spec: PhotoSpec): number {
   return (spec.headMinMm + spec.headMaxMm) / 2 / spec.heightMm;
 }
