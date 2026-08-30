@@ -55,7 +55,14 @@ export default function RootLayout({
       <body
         className={`${sans.variable} ${mono.variable} antialiased bg-background text-foreground`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>
